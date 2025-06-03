@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Skill Matches - TIMBLO</title>
+    <link rel="stylesheet" href="skillmatches.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="logo">
+            <img src="Logo.png" alt="TIMBLO Logo" onclick="window.location.href='/'" style="cursor: pointer; width: 200px;"/>
+        </div>
+        <div class="nav-links">
+            <a href="/"><i class="fa-solid fa-home"></i> Home</a>
+            <a href="./skillmatches.html" class="active"><i class="fa-solid fa-graduation-cap"></i> Skills</a>
+            <a href="./about.html"><i class="fa-solid fa-users"></i> About Us</a>
+            <a href="./signin.html"><i class="fa-solid fa-user"></i> Profile</a>
+        </div>
+    </nav>
+
+    <main class="skill-matches-container">
+        <div class="page-header">
+            <h1>Your Skill Swap Matches</h1>
+            <p>Connect, learn, and grow with your potential skill partners</p>
+        </div>
+        
+        <!-- Add New Skill Swap Form -->
+        <div class="add-skill-form">
+            <div class="form-header">
+                <h2><i class="fas fa-plus-circle"></i> Add New Skill Swap</h2>
+                <button class="toggle-form-btn" onclick="toggleForm()">
+                    <i class="fas fa-chevron-down"></i>
+                </button>
+            </div>
+            <form id="skillSwapForm">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="skillToTeach">Skill I Can Teach:</label>
+                        <input type="text" id="skillToTeach" required placeholder="e.g., Python">
+                    </div>
+                    <div class="form-group">
+                        <label for="skillToLearn">Skill I Want to Learn:</label>
+                        <input type="text" id="skillToLearn" required placeholder="e.g., Java">
+                    </div>
+                    <div class="form-group">
+                        <label for="availability">Availability:</label>
+                        <select id="availability" required>
+                            <option value="">Select Availability</option>
+                            <option value="weekdays">Weekdays</option>
+                            <option value="weekends">Weekends</option>
+                            <option value="flexible">Flexible</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <button type="submit" class="add-btn">
+                            <i class="fas fa-plus"></i> Add Skill Swap
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <!-- Skill Matches List -->
+        <div class="skill-matches-list">
+            <div class="filters">
+                <button class="filter-btn active" data-filter="all">
+                    <i class="fas fa-th-large"></i> All
+                </button>
+                <button class="filter-btn" data-filter="pending">
+                    <i class="fas fa-clock"></i> Pending
+                </button>
+                <button class="filter-btn" data-filter="matched">
+                    <i class="fas fa-check-circle"></i> Matched
+                </button>
+            </div>
+
+            <div class="matches">
+                <!-- Cards will be dynamically added here -->
+            </div>
+        </div>
+
+        <!-- Start Meet Button Section -->
+        <div style="text-align: center; margin-top: 40px; margin-bottom: 20px;">
+            <button class="video-call-btn" onclick="window.location.href='videoCall.html'" style="padding: 15px 30px; font-size: 1.2rem;">
+                <i class="fas fa-video"></i> Start Meet
+            </button>
+        </div>
+    </main>
+
+    <script>
+        // Load existing skill swaps from localStorage
+        let skillSwaps = JSON.parse(localStorage.getItem('skillSwaps')) || [];
+
+        function toggleForm() {
+            const form = document.querySelector('#skillSwapForm .form-grid');
+            const btn = document.querySelector('.toggle-form-btn');
+            form.classList.toggle('collapsed');
+            btn.classList.toggle('collapsed');
+        }
+
+        // Function to create a new match card
+        function createMatchCard(skillData) {
+            const card = document.createElement('div');
+            card.className = 'match-card';
+            card.setAttribute('data-status', skillData.status || 'pending');
+            
+            card.innerHTML = `
+                <div class="match-header">
+                    <span class="status ${skillData.status || 'pending'}">
+                        <i class="fas fa-${skillData.status === 'matched' ? 'check-circle' : 'clock'}"></i>
+                        ${skillData.status === 'matched' ? 'Matched!' : 'Pending Match'}
+                    </span>
+                    <div class="actions">
+                        <button class="edit-btn" title="Edit">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="delete-btn" title="Delete">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                        <button class="video-call-btn" title="Start Video Call">
+                            <i class="fas fa-video"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="match-content">
+                    <div class="skill-info">
+                        <div class="teach">
+                            <div class="skill-icon"><i class="fas fa-chalkboard-teacher"></i></div>
+                            <h3>I Can Teach</h3>
+                            <p>${skillData.skillToTeach}</p>
+                            <span class="experience">${skillData.teachDescription || 'Expert Level'}</span>
+                        </div>
+                        <div class="swap-icon">
+                            <i class="fas fa-exchange-alt"></i>
+                        </div>
+                        <div class="learn">
+                            <div class="skill-icon"><i class="fas fa-graduation-cap"></i></div>
+                            <h3>I Want to Learn</h3>
+                            <p>${skillData.skillToLearn}</p>
+                            <span class="level">${skillData.learnDescription || 'Beginner Level'}</span>
+                        </div>
+                    </div>
+                    <div class="match-details">
+                        <span><i class="far fa-clock"></i> ${skillData.availability || 'Flexible'}</span>
+                        <span><i class="far fa-calendar-alt"></i> Added ${new Date().toLocaleDateString()}</span>
+                    </div>
+                </div>
+            `;
+
+            // Add event listeners
+            const deleteBtn = card.querySelector('.delete-btn');
+            deleteBtn.addEventListener('click', () => {
+                if (confirm('Are you sure you want to delete this skill swap request?')) {
+                    card.classList.add('fade-out');
+                    setTimeout(() => {
+                        card.remove();
+                        // Remove from localStorage
+                        const index = skillSwaps.findIndex(swap => 
+                            swap.skillToTeach === skillData.skillToTeach && 
+                            swap.skillToLearn === skillData.skillToLearn
+                        );
+                        if (index > -1) {
+                            skillSwaps.splice(index, 1);
+                            localStorage.setItem('skillSwaps', JSON.stringify(skillSwaps));
+                        }
+                    }, 300);
+                }
+            });
+
+            const editBtn = card.querySelector('.edit-btn');
+            editBtn.addEventListener('click', () => {
+                const params = new URLSearchParams({
+                    skillToTeach: skillData.skillToTeach,
+                    teachDescription: skillData.teachDescription || '',
+                    skillToLearn: skillData.skillToLearn,
+                    learnDescription: skillData.learnDescription || ''
+                });
+                window.location.href = `swap.html?${params.toString()}`;
+            });
+
+            const videoCallBtn = card.querySelector('.video-call-btn');
+            videoCallBtn.addEventListener('click', () => {
+                if (skillData.status === 'matched') {
+                    window.location.href = 'videoCall.html';
+                } else {
+                    showNotification('Please wait for a match before starting a video call!');
+                }
+            });
+
+            return card;
+        }
+
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.className = 'notification';
+            notification.innerHTML = `
+                <i class="fas fa-info-circle"></i>
+                <span>${message}</span>
+            `;
+            document.body.appendChild(notification);
+            setTimeout(() => {
+                notification.classList.add('show');
+                setTimeout(() => {
+                    notification.classList.remove('show');
+                    setTimeout(() => notification.remove(), 300);
+                }, 3000);
+            }, 100);
+        }
+
+        // Form submission handler
+        document.getElementById('skillSwapForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const skillData = {
+                skillToTeach: document.getElementById('skillToTeach').value,
+                skillToLearn: document.getElementById('skillToLearn').value,
+                availability: document.getElementById('availability').value,
+                status: 'pending'
+            };
+            
+            // Add new card with animation
+            const newCard = createMatchCard(skillData);
+            newCard.style.opacity = '0';
+            const matchesContainer = document.querySelector('.matches');
+            matchesContainer.insertBefore(newCard, matchesContainer.firstChild);
+            
+            // Trigger reflow
+            newCard.offsetHeight;
+            newCard.style.opacity = '1';
+            
+            // Save to localStorage
+            skillSwaps.push(skillData);
+            localStorage.setItem('skillSwaps', JSON.stringify(skillSwaps));
+            
+            // Reset form
+            e.target.reset();
+            showNotification('Skill swap added successfully!');
+        });
+
+        // Filter functionality
+        document.querySelectorAll('.filter-btn').forEach(button => {
+            button.addEventListener('click', () => {
+                document.querySelectorAll('.filter-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                button.classList.add('active');
+                
+                const filter = button.getAttribute('data-filter');
+                document.querySelectorAll('.match-card').forEach(card => {
+                    if (filter === 'all' || card.getAttribute('data-status') === filter) {
+                        card.style.display = 'block';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+            });
+        });
+
+        // Load existing skill swaps on page load
+        window.addEventListener('DOMContentLoaded', () => {
+            const matchesContainer = document.querySelector('.matches');
+            matchesContainer.innerHTML = ''; // Clear any example cards
+            
+            skillSwaps.forEach((skillData, index) => {
+                const card = createMatchCard(skillData);
+                card.style.animationDelay = `${index * 0.1}s`;
+                matchesContainer.appendChild(card);
+            });
+        });
+    </script>
+</body>
+</html> 

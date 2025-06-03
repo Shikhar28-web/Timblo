@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TIMBLO - Video Call</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #90e0ef 0%, #00b4d8 100%);
+            --secondary-gradient: linear-gradient(135deg, #439cd4 0%, #10272c 100%);
+            --card-gradient: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.85) 100%);
+            --primary-color: #90e0ef;
+            --secondary-color: #21255b;
+            --accent-color: #00f2ff;
+            --success-gradient: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+            --pending-gradient: linear-gradient(135deg, #f1c40f 0%, #f39c12 100%);
+            --neon-shadow: 0 0 10px rgba(0, 242, 255, 0.5), 0 0 20px rgba(0, 242, 255, 0.3), 0 0 30px rgba(0, 242, 255, 0.1);
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Outfit', sans-serif;
+            background: var(--secondary-gradient);
+            color: #fff;
+        }
+
+        /* VideoCall CSS */
+        .video-call-container {
+            min-height: 100vh;
+            background: var(--secondary-gradient);
+            color: #fff;
+            position: relative;
+        }
+
+        .video-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            padding: 20px;
+            height: calc(100vh - 200px);
+            margin-top: 80px;
+        }
+
+        .video-wrapper {
+            position: relative;
+            border-radius: 24px;
+            overflow: hidden;
+            background: rgba(129, 169, 185, 0.1);
+            box-shadow: var(--neon-shadow);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: transform 0.3s ease;
+        }
+
+        .video-wrapper:hover {
+            transform: translateY(-5px);
+        }
+
+        .video-wrapper video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .video-placeholder {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 1.5rem;
+            color: var(--primary-color);
+        }
+
+        .name-tag {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            background: var(--primary-gradient);
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            backdrop-filter: blur(10px);
+            color: var(--secondary-color);
+            font-weight: 600;
+        }
+
+        .controls-container {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 100;
+        }
+
+        .main-controls {
+            display: flex;
+            gap: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px 30px;
+            border-radius: 50px;
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: var(--neon-shadow);
+        }
+
+        .control-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: none;
+            background: var(--primary-gradient);
+            color: var(--secondary-color);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1.2rem;
+        }
+
+        .control-btn:hover {
+            transform: scale(1.1);
+            box-shadow: var(--neon-shadow);
+        }
+
+        .control-btn.off {
+            background: var(--delete-gradient);
+            color: white;
+        }
+
+        .control-btn.sharing {
+            background: var(--success-gradient);
+            color: white;
+            animation: pulse 2s infinite;
+        }
+
+        .control-btn.end-call {
+            background: var(--delete-gradient);
+            color: white;
+        }
+
+        .bottom-panel {
+            position: fixed;
+            bottom: 100px;
+            right: 20px;
+            width: 300px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            display: flex;
+            flex-direction: column;
+            height: 400px;
+            box-shadow: var(--neon-shadow);
+            transition: height 0.3s ease;
+        }
+
+        .bottom-panel.minimized {
+            height: 60px;
+            overflow: hidden;
+        }
+
+        .chat-section {
+            flex: 1;
+            padding: 20px;
+        }
+
+        .chat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .chat-header h3 {
+            margin: 0;
+            color: var(--primary-color);
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .chat-toggle-btn {
+            background: none;
+            border: none;
+            color: var(--primary-color);
+            cursor: pointer;
+            padding: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            transition: all 0.3s ease;
+        }
+
+        .chat-toggle-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: scale(1.1);
+        }
+
+        .chat-toggle-btn i {
+            transition: transform 0.3s ease;
+        }
+
+        .minimized .chat-toggle-btn i {
+            transform: rotate(180deg);
+        }
+
+        .chat-messages {
+            height: calc(100% - 100px);
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+
+        .chat-message {
+            margin-bottom: 12px;
+            padding: 10px 15px;
+            border-radius: 16px;
+            max-width: 80%;
+        }
+
+        .chat-message.sent {
+            background: var(--primary-gradient);
+            margin-left: auto;
+            color: var(--secondary-color);
+        }
+
+        .chat-message.received {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .message-sender {
+            display: block;
+            font-size: 0.85rem;
+            margin-bottom: 4px;
+            color: var(--primary-color);
+            font-weight: 500;
+        }
+
+        .chat-input {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .chat-input input {
+            flex: 1;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-family: 'Outfit', sans-serif;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .chat-input input:focus {
+            outline: none;
+            background: rgba(255, 255, 255, 0.15);
+            border-color: var(--primary-color);
+        }
+
+        .chat-input input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .chat-input button {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            border: none;
+            background: var(--primary-gradient);
+            color: var(--secondary-color);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1.1rem;
+        }
+
+        .chat-input button:hover {
+            transform: scale(1.1);
+            box-shadow: var(--neon-shadow);
+        }
+
+        /* Navbar Styles */
+        .navbar {
+            height: 70px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+            z-index: 1000;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: var(--neon-shadow);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .nav-links a:hover {
+            background: var(--primary-gradient);
+            color: var(--secondary-color);
+            transform: translateY(-2px);
+            box-shadow: var(--neon-shadow);
+        }
+
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(46, 213, 115, 0.4);
+            }
+            70% {
+                box-shadow: 0 0 0 10px rgba(46, 213, 115, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(46, 213, 115, 0);
+            }
+        }
+
+        /* Scrollbar Styling */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary-color);
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--accent-color);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .video-grid {
+                grid-template-columns: 1fr;
+                gap: 10px;
+                padding: 10px;
+                height: calc(100vh - 160px);
+                margin-top: 60px;
+            }
+
+            .video-wrapper {
+                height: 40vh;
+            }
+
+            .navbar {
+                height: 50px;
+                padding: 0.5rem 1rem;
+            }
+
+            .navbar .logo img {
+                width: 150px;
+            }
+
+            .nav-links {
+                gap: 10px;
+            }
+
+            .nav-links a {
+                padding: 6px 12px;
+                font-size: 0.9rem;
+            }
+
+            .controls-container {
+                bottom: 80px;
+            }
+
+            .main-controls {
+                padding: 10px 15px;
+                gap: 10px;
+            }
+
+            .control-btn {
+                width: 40px;
+                height: 40px;
+                font-size: 1rem;
+            }
+
+            .bottom-panel {
+                width: 100%;
+                right: 0;
+                bottom: 0;
+                height: 50vh;
+                border-radius: 24px 24px 0 0;
+            }
+
+            .bottom-panel.minimized {
+                height: 50px;
+            }
+
+            .chat-section {
+                padding: 15px;
+            }
+
+            .chat-header {
+                margin-bottom: 10px;
+            }
+
+            .chat-header h3 {
+                font-size: 1rem;
+            }
+
+            .chat-toggle-btn {
+                width: 25px;
+                height: 25px;
+            }
+
+            .chat-messages {
+                height: calc(100% - 90px);
+            }
+
+            .chat-message {
+                font-size: 0.9rem;
+                padding: 8px 12px;
+            }
+
+            .chat-input {
+                margin-top: 10px;
+            }
+
+            .chat-input input {
+                padding: 8px 15px;
+                font-size: 0.9rem;
+            }
+
+            .chat-input button {
+                width: 35px;
+                height: 35px;
+                font-size: 0.9rem;
+            }
+
+            .screen-share-preview {
+                width: 120px;
+                height: 80px;
+                bottom: calc(50vh + 10px);
+            }
+
+            .call-status {
+                top: 60px;
+                font-size: 0.9rem;
+                padding: 8px 16px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .video-wrapper {
+                height: 35vh;
+            }
+
+            .navbar .logo img {
+                width: 120px;
+            }
+
+            .nav-links a {
+                padding: 4px 8px;
+                font-size: 0.8rem;
+            }
+
+            .control-btn {
+                width: 35px;
+                height: 35px;
+                font-size: 0.9rem;
+            }
+
+            .bottom-panel {
+                height: 40vh;
+            }
+        }
+
+        /* Call Status */
+        .call-status {
+            position: fixed;
+            top: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.6);
+            padding: 10px 20px;
+            border-radius: 25px;
+            color: white;
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            display: none;
+        }
+
+        /* Screen share preview */
+        .screen-share-preview {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 200px;
+            height: 120px;
+            background: rgba(0, 0, 0, 0.6);
+            border-radius: 10px;
+            overflow: hidden;
+            display: none;
+            z-index: 1001;
+        }
+
+        .screen-share-preview video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .screen-share-preview .close-preview {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: rgba(255, 0, 0, 0.7);
+            border: none;
+            color: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Add styles for size control button */
+        .size-control-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.6);
+            border: none;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            z-index: 10;
+        }
+
+        .size-control-btn:hover {
+            background: var(--primary-gradient);
+            transform: scale(1.1);
+        }
+
+        .video-wrapper.fullscreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 9999;
+        }
+
+        .video-wrapper.enlarged {
+            grid-column: span 2;
+            height: calc(100vh - 200px);
+        }
+
+        @media (max-width: 768px) {
+            .video-wrapper.enlarged {
+                height: 70vh;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="video-call-container">
+        <!-- Navbar -->
+        <nav class="navbar">
+            <div class="logo">
+                <img src="Logo.png" alt="TIMBLO Logo" width="300px"/>
+            </div>
+            <div class="nav-links">
+                <a href="./skillmatches.html"><i class="fa-solid fa-graduation-cap"></i> Skills</a>
+                <a href="./about.html"><i class="fa-solid fa-users"></i> About Us</a>
+                
+            </div>
+        </nav>
+
+        <!-- Call Status -->
+        <div class="call-status" id="callStatus">
+            Connected
+        </div>
+
+        <!-- Screen Share Preview -->
+        <div class="screen-share-preview" id="screenSharePreview">
+            <video id="screenPreviewVideo" autoplay muted playsinline></video>
+            <button class="close-preview" id="closeScreenShare">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+
+        <!-- Video Grid -->
+        <div class="video-grid">
+            <div class="video-wrapper local-video">
+                <video id="localVideo" autoplay muted playsinline></video>
+                <div class="video-placeholder" style="display: none;">Camera Off</div>
+                <div class="name-tag">You</div>
+            </div>
+            
+            <div class="video-wrapper remote-video">
+                <video id="remoteVideo" autoplay playsinline></video>
+                <div class="video-placeholder" style="display: none;">Camera Off</div>
+                <div class="name-tag">Partner</div>
+                <button class="size-control-btn" id="partnerSizeBtn" title="Toggle Partner Video Size">
+                    <i class="fas fa-expand"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Controls -->
+        <div class="controls-container">
+            <div class="main-controls">
+                <button class="control-btn" id="micBtn">
+                    <i class="fas fa-microphone"></i>
+                </button>
+                <button class="control-btn" id="videoBtn">
+                    <i class="fas fa-video"></i>
+                </button>
+                <button class="control-btn" id="screenShareBtn">
+                    <i class="fas fa-desktop"></i>
+                </button>
+                <button class="control-btn end-call" id="endCallBtn">
+                    <i class="fas fa-phone-slash"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Bottom Panel -->
+        <div class="bottom-panel" id="bottomPanel">
+            <div class="chat-section">
+                <div class="chat-header">
+                    <h3>Chat</h3>
+                    <button class="chat-toggle-btn" id="chatToggleBtn">
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                </div>
+                <div class="chat-messages" id="chatMessages"></div>
+                <form class="chat-input" id="chatForm">
+                    <input
+                        type="text"
+                        id="messageInput"
+                        placeholder="Type your message..."
+                    />
+                    <button type="submit">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // State variables
+        let isMicOn = true;
+        let isVideoOn = true;
+        let isScreenSharing = false;
+
+        // DOM Elements
+        const micBtn = document.getElementById('micBtn');
+        const videoBtn = document.getElementById('videoBtn');
+        const screenShareBtn = document.getElementById('screenShareBtn');
+        const endCallBtn = document.getElementById('endCallBtn');
+        const chatForm = document.getElementById('chatForm');
+        const messageInput = document.getElementById('messageInput');
+        const chatMessages = document.getElementById('chatMessages');
+        const bottomPanel = document.getElementById('bottomPanel');
+        const chatToggleBtn = document.getElementById('chatToggleBtn');
+        const localVideo = document.getElementById('localVideo');
+        const remoteVideo = document.getElementById('remoteVideo');
+        const partnerSizeBtn = document.getElementById('partnerSizeBtn');
+        const remoteVideoWrapper = document.querySelector('.remote-video');
+
+        // New variables for call state
+        let isCallActive = true;
+        const callStatus = document.getElementById('callStatus');
+        const screenPreview = document.getElementById('screenSharePreview');
+        const screenPreviewVideo = document.getElementById('screenPreviewVideo');
+        const closeScreenShare = document.getElementById('closeScreenShare');
+
+        // Partner video size state
+        let isPartnerVideoEnlarged = false;
+        let isPartnerVideoFullscreen = false;
+
+        // Toggle Microphone
+        micBtn.addEventListener('click', () => {
+            isMicOn = !isMicOn;
+            micBtn.classList.toggle('off');
+            micBtn.innerHTML = `<i class="fas fa-microphone${isMicOn ? '' : '-slash'}"></i>`;
+        });
+
+        // Toggle Video
+        videoBtn.addEventListener('click', () => {
+            isVideoOn = !isVideoOn;
+            videoBtn.classList.toggle('off');
+            videoBtn.innerHTML = `<i class="fas fa-video${isVideoOn ? '' : '-slash'}"></i>`;
+            document.querySelector('.local-video .video-placeholder').style.display = isVideoOn ? 'none' : 'block';
+        });
+
+        // Toggle Screen Share
+        screenShareBtn.addEventListener('click', () => {
+            if (!isScreenSharing) {
+                startScreenShare();
+            } else {
+                stopScreenShare();
+            }
+            isScreenSharing = !isScreenSharing;
+            screenShareBtn.classList.toggle('sharing');
+        });
+
+        // End Call
+        endCallBtn.addEventListener('click', () => {
+            if(confirm('Are you sure you want to end the call?')) {
+                if (isScreenSharing) {
+                    stopScreenShare();
+                }
+                window.location.href = '/';
+            }
+        });
+
+        // Handle Chat
+        chatForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const message = messageInput.value.trim();
+            if (message) {
+                addChatMessage('You', message);
+                messageInput.value = '';
+            }
+        });
+
+        // Add Chat Message
+        function addChatMessage(sender, text) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `chat-message ${sender === 'You' ? 'sent' : 'received'}`;
+            messageDiv.innerHTML = `
+                <span class="message-sender">${sender}</span>
+                <span class="message-text">${text}</span>
+            `;
+            chatMessages.appendChild(messageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        // Request camera and microphone permissions when page loads
+        async function setupMediaDevices() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+                localVideo.srcObject = stream;
+            } catch (err) {
+                console.error('Error accessing media devices:', err);
+                alert('Unable to access camera and microphone');
+            }
+        }
+
+        // Enhanced screen sharing functionality
+        async function startScreenShare() {
+            try {
+                const screenStream = await navigator.mediaDevices.getDisplayMedia({
+                    video: true,
+                    audio: true
+                });
+                
+                // Show preview
+                screenPreviewVideo.srcObject = screenStream;
+                screenPreview.style.display = 'block';
+                
+                // Handle stream end
+                screenStream.getVideoTracks()[0].addEventListener('ended', () => {
+                    stopScreenShare();
+                });
+                
+                // If we have a remote connection, send the stream
+                if (isCallActive) {
+                    // Here you would send the stream to the remote peer
+                    remoteVideo.srcObject = screenStream;
+                }
+            } catch (err) {
+                console.error('Error sharing screen:', err);
+                alert('Unable to share screen');
+                stopScreenShare();
+            }
+        }
+
+        function stopScreenShare() {
+            screenPreview.style.display = 'none';
+            if (screenPreviewVideo.srcObject) {
+                screenPreviewVideo.srcObject.getTracks().forEach(track => track.stop());
+            }
+            screenPreviewVideo.srcObject = null;
+            isScreenSharing = false;
+            screenShareBtn.classList.remove('sharing');
+        }
+
+        closeScreenShare.addEventListener('click', stopScreenShare);
+
+        // Initialize call
+        async function initializeCall() {
+            await setupMediaDevices();
+            // Show connected status briefly
+            callStatus.style.display = 'block';
+            setTimeout(() => {
+                callStatus.style.display = 'none';
+            }, 2000);
+        }
+
+        // Start the call process
+        initializeCall();
+
+        // Chat box toggle
+        chatToggleBtn.addEventListener('click', () => {
+            bottomPanel.classList.toggle('minimized');
+        });
+
+        // Toggle Partner Video Size
+        partnerSizeBtn.addEventListener('click', () => {
+            if (!isPartnerVideoFullscreen) {
+                if (!isPartnerVideoEnlarged) {
+                    // First click: Enlarge
+                    remoteVideoWrapper.classList.add('enlarged');
+                    isPartnerVideoEnlarged = true;
+                    partnerSizeBtn.innerHTML = '<i class="fas fa-expand"></i>';
+                } else {
+                    // Second click: Fullscreen
+                    remoteVideoWrapper.classList.remove('enlarged');
+                    remoteVideoWrapper.classList.add('fullscreen');
+                    isPartnerVideoEnlarged = false;
+                    isPartnerVideoFullscreen = true;
+                    partnerSizeBtn.innerHTML = '<i class="fas fa-compress"></i>';
+                }
+            } else {
+                // Third click: Reset
+                remoteVideoWrapper.classList.remove('fullscreen');
+                isPartnerVideoFullscreen = false;
+                partnerSizeBtn.innerHTML = '<i class="fas fa-expand"></i>';
+            }
+        });
+
+        // Handle ESC key to exit fullscreen
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && isPartnerVideoFullscreen) {
+                remoteVideoWrapper.classList.remove('fullscreen');
+                isPartnerVideoFullscreen = false;
+                partnerSizeBtn.innerHTML = '<i class="fas fa-expand"></i>';
+            }
+        });
+    </script>
+</body>
+</html> 

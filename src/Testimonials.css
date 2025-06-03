@@ -1,0 +1,113 @@
+.testimonials {
+  padding: 6rem 2rem;
+  text-align: center;
+  background: rgba(26, 42, 51, 0.7);
+  backdrop-filter: blur(10px);
+  margin: 4rem 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.testimonials::before {
+  content: '';
+  position: absolute;
+  width: 200%;
+  height: 200%;
+  top: -50%;
+  left: -50%;
+  background: radial-gradient(circle, rgba(100, 255, 218, 0.1) 0%, rgba(0, 180, 216, 0) 70%);
+  animation: rotate 20s linear infinite;
+  z-index: -1;
+}
+
+.testimonials h2 {
+  font-size: 3rem;
+  margin-bottom: 4rem;
+  background: linear-gradient(45deg, #64ffda, #00b4d8);
+  -webkit-background-clip: text;
+  color: transparent;
+  opacity: 0;
+  animation: slideUp 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  font-weight: 800;
+  letter-spacing: -1px;
+}
+
+.testimonial-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 2.5rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.testimonial-card {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(12px);
+  padding: 2.5rem;
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  width: 320px;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  opacity: 0;
+  animation: slideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  position: relative;
+}
+
+.testimonial-card::before {
+  content: '"';
+  position: absolute;
+  top: 1rem;
+  left: 1.5rem;
+  font-size: 4rem;
+  color: rgba(100, 255, 218, 0.1);
+  font-family: Georgia, serif;
+}
+
+.testimonial-card:nth-child(1) { animation-delay: 0.2s; }
+.testimonial-card:nth-child(2) { animation-delay: 0.4s; }
+.testimonial-card:nth-child(3) { animation-delay: 0.6s; }
+.testimonial-card:nth-child(4) { animation-delay: 0.8s; }
+.testimonial-card:nth-child(5) { animation-delay: 1s; }
+
+.testimonial-card:hover {
+  transform: translateY(-10px) scale(1.02);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(100, 255, 218, 0.2);
+}
+
+.testimonial-card p {
+  font-size: 1.1rem;
+  line-height: 1.8;
+  color: #ffffff;
+  margin-bottom: 1.5rem;
+  position: relative;
+  z-index: 1;
+}
+
+.testimonial-card h4 {
+  color: #64ffda;
+  font-size: 1.2rem;
+  margin: 0;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.testimonial-card h4::before {
+  content: '—';
+  color: rgba(100, 255, 218, 0.5);
+}
+
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}

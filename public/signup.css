@@ -1,0 +1,241 @@
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  margin: 0;
+  font-family: 'Outfit', sans-serif;
+  background: linear-gradient(to bottom, #e0f7fa, #90e0ef);
+  color: #111;
+  animation: fadeIn 2s ease;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 60px;
+  background: transparent;
+  animation: slideDown 1s ease;
+}
+
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+}
+
+.logo img {
+  height: 150px;
+  margin-right: 10px;
+  animation: popUp 1s ease;
+}
+
+.logo h1 {
+  font-size: 28px;
+  font-weight: 700;
+  color: #07253f;
+}
+
+nav a {
+  margin: 0 20px;
+  text-decoration: none;
+  color: #111;
+  font-weight: 500;
+  position: relative;
+}
+
+nav a::after {
+  content: "";
+  width: 0;
+  height: 2px;
+  background: #008cba;
+  position: absolute;
+  bottom: -5px;
+  left: 0;
+  transition: 0.3s ease;
+}
+
+nav a:hover::after {
+  width: 100%;
+}
+
+.tagline {
+  text-align: center;
+  font-family: 'Kalam', cursive;
+  font-size: 30px;
+  margin-top: 20px;
+  animation: zoomIn 1s ease;
+}
+
+.form-container {
+  display: flex;
+  justify-content: center;
+  margin: 40px;
+  flex-wrap: wrap;
+  gap: 40px;
+}
+
+.profile-section {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: -100px;
+  margin-left: -50px;
+  animation: moveProfile 1.2s ease forwards;
+}
+
+@keyframes moveProfile {
+  from {
+    transform: translate(0, 0);
+    opacity: 0;
+  }
+  to {
+    transform: translate(-20px, -20px);
+    opacity: 1;
+  }
+}
+
+.profile-circle {
+  width: 160px;
+  height: 160px;
+  background: white;
+  border-radius: 50%;
+  border: 2px solid #ccc;
+  position: relative;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+  animation: pulse 2s infinite;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.profile-circle img {
+  width: 60px;
+}
+
+.edit-icon {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  height: 40px;
+  background: #41b6c4;
+  text-align: center;
+  line-height: 40px;
+  font-size: 16px;
+  border-radius: 0 0 50% 50%;
+  color: white;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.edit-icon:hover {
+  background: #2c9da8;
+}
+
+
+.signup-form {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px 40px;
+  width: 600px;
+  max-width: 90%;
+  animation: floatUp 1.5s ease;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group label {
+  font-weight: 500;
+  margin-bottom: 6px;
+}
+
+.form-group input {
+  padding: 10px 14px;
+  border-radius: 8px;
+  border: 1px solid #aaa;
+  outline: none;
+  transition: 0.3s ease;
+}
+
+.form-group input:focus {
+  border-color: #008cba;
+  box-shadow: 0 0 8px #a1ecf7;
+}
+
+.form-footer {
+  grid-column: span 2;
+  text-align: center;
+  font-family: 'Kalam', cursive;
+  font-size: 18px;
+  margin-top: 20px;
+}
+
+/* ANIMATIONS */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideDown {
+  from { transform: translateY(-100px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes pulse {
+  0% { box-shadow: 0 0 0 0 rgba(0, 140, 186, 0.4); }
+  70% { box-shadow: 0 0 0 15px rgba(0, 140, 186, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(0, 140, 186, 0); }
+}
+
+@keyframes zoomIn {
+  from { transform: scale(0.8); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+@keyframes floatUp {
+  from { transform: translateY(40px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@media (max-width: 768px) {
+  .profile-section {
+    margin-top: 0;
+    margin-left: 0;
+    transform: none !important;
+    justify-content: center;
+  }
+
+  .signup-form {
+    grid-template-columns: 1fr; /* Single column on small screens */
+    width: 100%;
+  }
+}
+
+.submit-btn {
+  padding: 12px 30px;
+  background-color: #008cba;
+  color: white;
+  font-size: 16px;
+  font-weight: 600;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.submit-btn:hover {
+  background-color: #005f7a;
+}
+
