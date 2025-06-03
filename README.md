@@ -6,7 +6,6 @@
 </div>
 
 [![GitHub repo](https://img.shields.io/badge/github-Timblo-blue?style=flat&logo=github)](https://github.com/Shikhar28-web/Timblo)
-[![Live Demo](https://img.shields.io/badge/demo-live-green?style=flat&logo=vercel)](https://timblo.vercel.app)
 
 ## About
 TIMBLO is a platform where users can exchange skills with each other. Teach what you know, learn what you want - all through an intuitive interface with integrated video calling.
