@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Swap Now | Timblo</title>
+    <link rel="stylesheet" href="swap.css">
+    <link rel="stylesheet" href="HomePage.css">
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Outfit:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header class="header">
+        <div class="logo">
+            <img src="Logo.png" alt="Timblo Logo" onclick="window.location.href='index.html'" style="cursor: pointer;" />
+        </div>
+        <nav>
+            <a href="">Home</a>
+            <a href="./skillmatches.html">Skills</a>
+            <a href="./about.html">About Us</a>
+            <a href="./signin.html">Profile</a>
+        </nav>
+    </header>
+
+    <section class="swap-section">
+        <h1 class="title">Let's Swap Skills 🚀</h1>
+        <form id="swapForm" class="swap-cards">
+            <div class="card-container">
+                <div class="flip-card">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front">
+                            <h2>Your Skill</h2>
+                            <input type="text" id="skillToTeach" name="skillToTeach" required 
+                                   placeholder="e.g. Graphic Design" />
+                            <input type="text" id="teachDescription" name="teachDescription" required 
+                                   placeholder="Brief description of your expertise..." 
+                                   style="margin-top: 15px;" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-container">
+                <div class="flip-card">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front">
+                            <h2>Need Skill</h2>
+                            <input type="text" id="skillToLearn" name="skillToLearn" required 
+                                   placeholder="e.g. Web Development" />
+                            <input type="text" id="learnDescription" name="learnDescription" required 
+                                   placeholder="What would you like to learn..." 
+                                   style="margin-top: 15px;" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div style="width: 100%; text-align: center;">
+                <a href="skillmatches.html"><button type="submit" class="swap-btn">Find Matches</button></a>
+            </div>
+        </form>
+    </section>
+
+    <script>
+        document.getElementById('swapForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Get form data
+            const skillData = {
+                skillToTeach: document.getElementById('skillToTeach').value,
+                teachDescription: document.getElementById('teachDescription').value,
+                skillToLearn: document.getElementById('skillToLearn').value,
+                learnDescription: document.getElementById('learnDescription').value,
+                availability: 'Flexible',
+                status: 'pending'
+            };
+
+            // Store in localStorage
+            let skillSwaps = JSON.parse(localStorage.getItem('skillSwaps')) || [];
+            skillSwaps.push(skillData);
+            localStorage.setItem('skillSwaps', JSON.stringify(skillSwaps));
+            
+            // Redirect to skillmatches.html
+            window.location.href = 'skillmatches.html';
+        });
+
+        // Check for URL parameters to pre-fill form
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.has('skillToTeach')) {
+            document.getElementById('skillToTeach').value = urlParams.get('skillToTeach');
+            document.getElementById('teachDescription').value = urlParams.get('teachDescription');
+            document.getElementById('skillToLearn').value = urlParams.get('skillToLearn');
+            document.getElementById('learnDescription').value = urlParams.get('learnDescription');
+        }
+    </script>
+</body>
+</html>

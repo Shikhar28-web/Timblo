@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/Timblo/static/css/main.c62562f6.css",
+    "main.js": "/Timblo/static/js/main.02d7af4c.js",
+    "static/js/453.ed3810f9.chunk.js": "/Timblo/static/js/453.ed3810f9.chunk.js",
+    "index.html": "/Timblo/index.html",
+    "main.c62562f6.css.map": "/Timblo/static/css/main.c62562f6.css.map",
+    "main.02d7af4c.js.map": "/Timblo/static/js/main.02d7af4c.js.map",
+    "453.ed3810f9.chunk.js.map": "/Timblo/static/js/453.ed3810f9.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.c62562f6.css",
+    "static/js/main.02d7af4c.js"
+  ]
+}
